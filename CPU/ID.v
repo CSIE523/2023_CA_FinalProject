@@ -12,27 +12,34 @@ output [1:0] wb_reg_write_source;
 output reg_write_enable;
 output [4:0] reg_write_address;
 
-assign [6:0] opcode = instruction[6:0];
-assign [2:0] funct3 = instruction[14:12];
-assign [6:0] funct7 = instruction[31:25];
-assign [4:0] rd = instruction[11:7];
-assign [4:0] rs1 = instruction[19:15];
-assign [4:0] rs2 = instruction[24:20];
+wire [6:0] opcode;
+wire [2:0] funct3;
+wire [6:0] funct7;
+wire [4:0] rd;
+wire [4:0] rs1;
+wire [4:0] rs2;
+assign opcode = instruction[6:0];
+assign funct3 = instruction[14:12];
+assign funct7 = instruction[31:25];
+assign rd = instruction[11:7];
+assign rs1 = instruction[19:15];
+assign rs2 = instruction[24:20];
 
-always @(posedge clk or posedge rst)begin
-    if(rst)begin
-        regs_reg1_read_address <= ;
-        val regs_reg2_read_address <= ;
-        ex_immediate;
-        ex_aluop1_source;
-        ex_aluop2_source;
-        memory_read_enable;
-        memory_write_enable;
-        wb_reg_write_source;
-        reg_write_enable;
-        eg_write_address;
-    end
-    else begin
+// always @(posedge clk or posedge rst)begin
+    // if(rst)begin
+    //     regs_reg1_read_address <= ;
+    //     val regs_reg2_read_address <= ;
+    //     ex_immediate;
+    //     ex_aluop1_source;
+    //     ex_aluop2_source;
+    //     memory_read_enable;
+    //     memory_write_enable;
+    //     wb_reg_write_source;
+    //     reg_write_enable;
+    //     reg_write_address;
+    // end
+    // else begin
+always @(*)begin
         regs_reg1_read_address <= (opcode == 7'b0110111)?5'd0:rs1;
         regs_reg2_read_address <= rs2;
         case (opcode)
@@ -73,6 +80,6 @@ always @(posedge clk or posedge rst)begin
         endcase
         reg_write_address <= rd;
     end
-end
+// end
     
 endmodule
