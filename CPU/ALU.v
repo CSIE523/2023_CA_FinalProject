@@ -1,9 +1,9 @@
 `define DataWidth 32
 
-module ALU(clk, rst, func, op1, op2, result);
+module ALU(func, op1, op2, result);
 
 input clk;
-input func;
+input [3:0]func;
 input [DataWidth-1:0] op1;
 input [DataWidth-1:0] op2;
 
