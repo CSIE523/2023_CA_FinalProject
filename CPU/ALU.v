@@ -1,4 +1,4 @@
-`define DataWidth 8
+`define DataWidth 32
 
 module ALU(clk, rst, func, op1, op2, result);
 
@@ -37,7 +37,7 @@ always@(posedge clk or posedge rst)begin
                 result <= (op1 << op2[4:0]);
             end
             SLT:begin
-                result <= ((signed)op1 < (signed)op2);
+                result <= ($(signed)op1 < $(signed)op2);
             end
             XOR:begin
                 result <= op1 ^ op2;
