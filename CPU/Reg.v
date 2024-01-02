@@ -1,9 +1,7 @@
 `define PhysicalRegisterAddrWidth 5
 `define DataWidth 8
 
-module(clk, rst, write_enable, write_address, write_data, read_address1, read_address2, read_data1, read_data2, debug_read_address, debug_read_data);
-
-input clk, rst;
+module REG(write_enable, write_address, write_data, read_address1, read_address2, read_data1, read_data2, debug_read_address, debug_read_data);
 input write_enable;
 input [PhysicalRegisterAddrWidth-1:0]write_address;
 input [DataWidth-1:0]write_data;
@@ -22,11 +20,12 @@ output [DataWidth-1:0]debug_read_data;
 reg [DataWidth-1:0]registers[0:PhysicalRegisterAddrWidth-1];
 
 
-always@(posedge clk or posedge rst)begin
-    if(rst)begin
-        registers <= 0;
-    end
-    else begin
+// always@(posedge clk or posedge rst)begin
+//     if(rst)begin
+//         registers <= 0;
+//     end
+//     else begin
+always @(*) begin
         if(write_enable && write_address != 0)begin
             registers[write_address] <= write_data;
         end
@@ -46,8 +45,7 @@ always@(posedge clk or posedge rst)begin
         else 
             debug_read_data <= registers[debug_read_address];
     end
-
-end
+// end
 
 
 endmodule

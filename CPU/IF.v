@@ -1,4 +1,4 @@
-module IF (jump_flag_id,jump_address_id,instruction_read_data,instruction_valid,instruction_address,instruction);
+module IF (clk,rst,jump_flag_id,jump_address_id,instruction_read_data,instruction_valid,instruction_address,instruction);
 
 input jump_flag_id;
 input [31:0] jump_address_id;
