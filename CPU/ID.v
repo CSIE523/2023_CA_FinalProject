@@ -19,24 +19,6 @@ assign [4:0] rd = instruction[11:7];
 assign [4:0] rs1 = instruction[19:15];
 assign [4:0] rs2 = instruction[24:20];
 
-object InstructionTypes {
-  val L  = "b0000011".U
-  val I  = "b0010011".U
-  val S  = "b0100011".U
-  val RM = "b0110011".U
-  val B  = "b1100011".U
-}
-
-object Instructions {
-  val lui   = "b0110111".U
-  val nop   = "b0000001".U
-  val jal   = "b1101111".U
-  val jalr  = "b1100111".U
-  val auipc = "b0010111".U
-  val csr   = "b1110011".U
-  val fence = "b0001111".U
-}
-
 always @(posedge clk or posedge rst)begin
     if(rst)begin
         regs_reg1_read_address <= ;
@@ -71,10 +53,26 @@ always @(posedge clk or posedge rst)begin
             default:   ex_aluop1_source <= 1'b0;
         endcase
         ex_aluop2_source <= (opcode == b0110011)?1'b0:1'b1; //reg:imm
-        memory_read_enable <= (opcode == 7'b0000011) 
+        memory_read_enable <= (opcode == 7'b0000011);       //InstructionTypes.L
+        memory_write_enable <= (opcode == 7'b0100011);      //InstructionTypes.S
+        case (opcode)
+            7'b0000011 : wb_reg_write_source <= 2'd1;       //InstructionTypes.L
+            7'b1101111 : wb_reg_write_source <= 2'd3;       //InstructionTypes.jal
+            7'b1100111 : wb_reg_write_source <= 2'd2;       //InstructionTypes.jalr
+            default:     wb_reg_write_source <= 2'd0;       //ALU_result
+        endcase
+        case (opcode)
+            7'b0110011:reg_write_enable <= 1'b1; //InstructionTypes.RM
+            7'b0010011:reg_write_enable <= 1'b1; //InstructionTypes.I
+            7'b0000011:reg_write_enable <= 1'b1; //InstructionTypes.L
+            7'b0010111:reg_write_enable <= 1'b1; //Instruction.auipc
+            7'b0110111:reg_write_enable <= 1'b1; //Instruction.lui
+            7'b1101111:reg_write_enable <= 1'b1; //Instruction.jal
+            7'b1100111:reg_write_enable <= 1'b1; //Instruction.jalr
+            default:   reg_write_enable <= 1'b0;
+        endcase
+        reg_write_address <= rd;
     end
 end
     
 endmodule
-
-
