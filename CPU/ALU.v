@@ -1,15 +1,4 @@
 `define DataWidth 8
-`define ZERO 0
-`define ADD 1
-`define SUB 2
-`define SLL 3
-`define SLT 4
-`define XOR 5
-`define OR 6
-`define AND 7
-`define SRL 8
-`define SRA 9
-`define SLTU 10
 
 module ALU(clk, rst, func, op1, op2, result);
 
@@ -19,6 +8,18 @@ input [DataWidth-1:0] op1;
 input [DataWidth-1:0] op2;
 
 output [DataWidth-1:0] result;
+
+localparam ZERO = 0,
+        ADD = 1,
+        SUB = 2,
+        SLL = 3,
+        SLT = 4,
+        XOR = 5,
+        OR = 6, 
+        AND = 7,
+        SRL = 8,
+        SRA = 9,
+        SLTU= 10;
 
 always@(posedge clk or posedge rst)begin
     if(rst)begin
