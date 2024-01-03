@@ -2,7 +2,7 @@
 
 module ALU(func, op1, op2, result);
 
-input clk;
+// input clk;
 input [3:0]func;
 input [DataWidth-1:0] op1;
 input [DataWidth-1:0] op2;
@@ -21,11 +21,12 @@ localparam ZERO = 0,
         SRA = 9,
         SLTU= 10;
 
-always@(posedge clk or posedge rst)begin
-    if(rst)begin
-        result <= 0;
-    end
-    else begin
+// always@(posedge clk or posedge rst)begin
+//     if(rst)begin
+//         result <= 0;
+//     end
+//     else begin
+always@(*)begin
         case(func)
             ADD:begin
                 result <= op1 + op2;
@@ -59,7 +60,7 @@ always@(posedge clk or posedge rst)begin
             end
         endcase
     end
-end
+// end
 
 
 endmodule

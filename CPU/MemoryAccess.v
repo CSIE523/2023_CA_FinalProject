@@ -3,7 +3,7 @@
 `define WordSize 4
 `define ByteBits 8
 
-module MemoryAccess(clk, rst, alu_result, reg2_data, memory_read_enable, memory_write_enable, funct3, wb_memory_read_data, address, write_data, write_enable, write_strobe, read_data); 
+module MemoryAccess(alu_result, reg2_data, memory_read_enable, memory_write_enable, funct3, wb_memory_read_data, address, write_data, write_enable, write_strobe, read_data); 
 
 input [DataWidth-1:0]alu_result;
 input [DataWidth-1:0]reg2_data;
@@ -25,15 +25,16 @@ wire [DataWidth-1:0]data = read_data;
 
 integer i;
 
-always@(posedge clk or posedge rst)begin
-    if(rst)begin
-        write_enable <= 0;
-        write_data <= 0;
-        address <= alu_result;
-        write_strobe <= 0;
-        wb_memory_read_data <= 0;
-    end
-    else begin
+// always@(posedge clk or posedge rst)begin
+//     if(rst)begin
+//         write_enable <= 0;
+//         write_data <= 0;
+//         address <= alu_result;
+//         write_strobe <= 0;
+//         wb_memory_read_data <= 0;
+//     end
+//     else begin
+always@(*)begin
       if(memory_read_enable)begin
         case(funct3)
             3'b000:begin
@@ -111,7 +112,7 @@ always@(posedge clk or posedge rst)begin
         end
       end
     end
-end
+// end
 
 
 endmodule

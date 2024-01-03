@@ -1,6 +1,9 @@
 module CPU(clk,rst,data_out,instr_out,instr_read,data_read,instr_addr,data_addr,data_write,data_in);
 `define PhysicalRegisterAddrWidth 5
-`define DataWidth 8
+`define DataWidth 32
+`define AddrWidth 32
+`define WordSize 4
+`define ByteBits 8
 
 input             clk;
 input             rst;
@@ -13,19 +16,14 @@ output reg [31:0] data_addr; //read data addr
 output reg [3:0]  data_write;//data write enable
 output reg [31:0] data_in;   //data write data
 
-wire clk;
-wire rst;
-
 REG U_REG(
-    .write_enable(write_enable), 
-    .write_address(write_address), 
-    .write_data(write_data), 
-    .read_address1(read_address1), 
-    .read_address2(read_address2), 
-    .read_data1(read_data1), 
-    .read_data2(read_data2), 
-    .debug_read_address(debug_read_address), 
-    .debug_read_data(debug_read_data)
+    .write_enable(write_enable),//
+    .write_address(write_address),//
+    .write_data(write_data),//
+    .read_address1(read_address1), //
+    .read_address2(read_address2),//
+    .read_data1(read_data1),//
+    .read_data2(read_data2)//
     );
 
 wire write_enable;
@@ -38,19 +36,18 @@ wire [PhysicalRegisterAddrWidth-1:0]read_address2;
 wire [DataWidth-1:0]read_data1;
 wire [DataWidth-1:0]read_data2;
 
-wire [PhysicalRegisterAddrWidth-1:0]debug_read_address;
-
-wire [DataWidth-1:0]debug_read_data;
+// wire [PhysicalRegisterAddrWidth-1:0]debug_read_address;
+// wire [DataWidth-1:0]debug_read_data;
 
 IF U_IF(
-    clk(clk),
-    rst(rst),
-    jump_flag_id(jump_flag_id),
-    jump_address_id(jump_address_id),
-    instruction_read_data(instruction_read_data),
-    instruction_valid(instruction_valid),
-    instruction_address(instruction_address),
-    instruction(instruction)
+    .clk(clk),//
+    .rst(rst),//
+    .jump_flag_id(jump_flag_id),//
+    .jump_address_id(jump_address_id),
+    .instruction_read_data(instruction_read_data),
+    .instruction_valid(instruction_valid),
+    .instruction_address(instruction_address),
+    .instruction(instruction)
     );
 
 wire jump_flag_id;
@@ -61,61 +58,79 @@ wire [31:0] instruction_address;
 wire [31:0] instruction;
 
 ID U_ID(
-    instruction(instruction),
-    regs_reg1_read_address(regs_reg1_read_address),
-    regs_reg2_read_address(regs_reg2_read_address),
-    ex_immediate(ex_immediate),
-    ex_aluop1_source(ex_aluop1_source),
-    ex_aluop2_source(ex_aluop2_source),
-    memory_read_enable(memory_read_enable),
-    memory_write_enable(memory_write_enable),
-    wb_reg_write_source(wb_reg_write_source),
-    reg_write_enable(reg_write_enable),
-    reg_write_address(reg_write_address)
+    .instruction(instruction),
+    .regs_reg1_read_address(read_address1),//
+    .regs_reg2_read_address(read_address2),//
+    .ex_immediate(ex_immediate),//
+    .ex_aluop1_source(ex_aluop1_source),//
+    .ex_aluop2_source(ex_aluop2_source),//
+    .memory_read_enable(memory_read_enable),//
+    .memory_write_enable(memory_write_enable),//
+    .wb_reg_write_source(wb_reg_write_source),//
+    .reg_write_enable(write_enable),//
+    .reg_write_address(write_address)//
     );
 
-wire [4:0] regs_reg1_read_address;
-wire [4:0] regs_reg2_read_address;
 wire [31:0] ex_immediate;
 wire ex_aluop1_source;
 wire ex_aluop2_source;
 wire memory_read_enable;
 wire memory_write_enable;
 wire [1:0] wb_reg_write_source;
-wire reg_write_enable;
-wire [4:0] reg_write_address;
 
 
-EXE U_EXE(instruction(instruction),
-    instruction_address(instruction_address),
-    reg1_data(),
-    reg2_data,
-    immediate,
-    aluop1_source,
-    aluop2_source,
-    mem_alu_result,
-    if_jump_flag,
-    if_jump_address);
 
-input [31:0]instruction;
-input [31:0]instruction_address;
-input [31:0]reg1_data;
-input [31:0]reg2_data;
-input [31:0]immediate;
-input aluop1_source;
-input aluop2_source;
-output [31:0]mem_alu_result;
-output if_jump_flag;
-output [31:0]if_jump_address;
+EXE U_EXE(
+    .instruction(instruction),
+    .instruction_address(instruction_address),
+    .reg1_data(read_data1),//
+    .reg2_data(read_data2),//
+    .immediate(ex_immediate),//
+    .aluop1_source(ex_aluop1_source),//
+    .aluop2_source(ex_aluop2_source),//
+    .mem_alu_result(mem_alu_result),//
+    .if_jump_flag(jump_flag_id),//
+    .if_jump_address(jump_address_id)//
+    );
 
-WriteBack U_WB(clk, rst, instruction_address, alu_result, memory_read_data, regs_write_source, regs_write_data);
-input clk, rst;
-input [AddrWidth-1:0]instruction_address;
-input [DataWidth-1:0]alu_result;
-input [DataWidth-1:0]memory_read_data;
-input [1:0]regs_write_source;
+wire [31:0]mem_alu_result;
 
-output [DataWidth-1:0]regs_write_data;
+WriteBack U_WB(
+    .instruction_address(instruction_address), //
+    .alu_result(mem_alu_result), //
+    .memory_read_data(memory_read_data), 
+    .regs_write_source(wb_reg_write_source),// 
+    .regs_write_data(write_data)//
+    );
+
+wire [DataWidth-1:0]memory_read_data;
+
+MemoryAccess U_MemoryAccess(
+    .alu_result(mem_alu_result), //
+    .reg2_data(read_data2), //
+    .memory_read_enable(memory_read_enable),// 
+    .memory_write_enable(memory_write_enable), //
+    .funct3(funct3), //
+    .wb_memory_read_data(memory_read_data), //
+    .address, 
+    .write_data, 
+    .write_enable, 
+    .write_strobe, 
+    .read_data
+    ); 
+
+wire [2:0]funct3;
+assign funct3 = instruction[14:12];
+
+
+//RAMBundle
+wire [AddrWidth-1:0]address;
+wire [DataWidth-1:0]write_data;
+wire write_enable;
+wire [WordSize-1:0]write_strobe;
+wire [DataWidth-1:0]read_data;
+
+
 
 
 // inst_fetch.io.jump_address_id       := ex.io.if_jump_address
