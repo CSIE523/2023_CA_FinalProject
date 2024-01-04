@@ -13,13 +13,8 @@ always @(posedge clk or posedge rst)begin
         instruction <= 32'h0000_0013; //nop = addi x0,x0,0
     end
     else begin
-        if(instruction_valid)begin
             instruction <= instruction_read_data;
             instr_addr <= (jump_flag_id)?jump_address_id:instr_addr + 32'd4;
-        end
-        else begin
-            instruction <= 32'h0000_0013; //nop
-        end
     end
 end
     

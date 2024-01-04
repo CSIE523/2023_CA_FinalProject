@@ -1,20 +1,23 @@
 module CPU(clk,rst,data_out,instr_out,instr_read,data_read,instr_addr,data_addr,data_write,data_in);
+
 `define PhysicalRegisterAddrWidth 5
 `define DataWidth 32
 `define AddrWidth 32
 `define WordSize 4
 `define ByteBits 8
 
-input             clk;
-input             rst;
-input      [31:0] data_out;  //read DM
-input      [31:0] instr_out; //read IM
-output reg        instr_read;//inst read enable
-output reg [31:0] instr_addr;//read inst addr
-output reg        data_read; //data read enable
-output reg [31:0] data_addr; //read data addr
-output reg [3:0]  data_write;//data write enable
-output reg [31:0] data_in;   //data write data
+input             clk;                               //
+input             rst;                               //
+input      [31:0] data_out;  //read DM               //
+input      [31:0] instr_out; //read IM               //
+output            instr_read;//inst read enable      // 
+output     [31:0] instr_addr;//read inst addr        // 
+output reg        data_read; //data read enable      //
+output reg [31:0] data_addr; //read data addr        //
+output reg [3:0]  data_write;//data write enable     //
+output reg [31:0] data_in;   //data write data       //
+
+assign instr_read = 1;
 
 REG U_REG(
     .write_enable(write_enable),//
@@ -39,26 +42,27 @@ wire [DataWidth-1:0]read_data2;
 // wire [PhysicalRegisterAddrWidth-1:0]debug_read_address;
 // wire [DataWidth-1:0]debug_read_data;
 
+wire [31:0] instruction;
+assign instruction = instr_out;
+
 IF U_IF(
     .clk(clk),//
     .rst(rst),//
     .jump_flag_id(jump_flag_id),//
-    .jump_address_id(jump_address_id),
-    .instruction_read_data(instruction_read_data),
-    .instruction_valid(instruction_valid),
+    .jump_address_id(jump_address_id),//
+    .instruction_read_data(instruction_out),//input instr // new instr
+    //.instruction_valid(instruction_valid),
     .instruction_address(instruction_address),
-    .instruction(instruction)
+    .instruction(instruction)//
     );
 
 wire jump_flag_id;
 wire [31:0] jump_address_id;
-wire [31:0] instruction_read_data;
-wire instruction_valid;
 wire [31:0] instruction_address;
-wire [31:0] instruction;
+assign instruction_address = instr_addr;
 
 ID U_ID(
-    .instruction(instruction),
+    .instruction(instruction),//
     .regs_reg1_read_address(read_address1),//
     .regs_reg2_read_address(read_address2),//
     .ex_immediate(ex_immediate),//
@@ -75,13 +79,16 @@ wire [31:0] ex_immediate;
 wire ex_aluop1_source;
 wire ex_aluop2_source;
 wire memory_read_enable;
+
+assign memory_read_enable = data_read;
+
 wire memory_write_enable;
 wire [1:0] wb_reg_write_source;
 
 
 
 EXE U_EXE(
-    .instruction(instruction),
+    .instruction(instruction),//
     .instruction_address(instruction_address),
     .reg1_data(read_data1),//
     .reg2_data(read_data2),//
@@ -111,26 +118,20 @@ MemoryAccess U_MemoryAccess(
     .memory_read_enable(memory_read_enable),// 
     .memory_write_enable(memory_write_enable), //
     .funct3(funct3), //
-    .wb_memory_read_data(memory_read_data), //
-    .address, 
-    .write_data, 
-    .write_enable, 
-    .write_strobe, 
-    .read_data
+    /*output*/
+    .wb_memory_read_data(memory_read_data),//
+    .address(data_addr),//
+    .write_data(data_in),// 
+    // .write_enable, 
+    .write_strobe(data_write),//
+    /*input*/
+    .read_data(data_out)//
     ); 
+
+//module SRAM(clk,rst,addr,read,write,DI,DO);
 
 wire [2:0]funct3;
 assign funct3 = instruction[14:12];
-
-
-//RAMBundle
-wire [AddrWidth-1:0]address;
-wire [DataWidth-1:0]write_data;
-wire write_enable;
-wire [WordSize-1:0]write_strobe;
-wire [DataWidth-1:0]read_data;
-
-
 
 
 // inst_fetch.io.jump_address_id       := ex.io.if_jump_address

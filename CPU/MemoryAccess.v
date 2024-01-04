@@ -3,7 +3,8 @@
 `define WordSize 4
 `define ByteBits 8
 
-module MemoryAccess(alu_result, reg2_data, memory_read_enable, memory_write_enable, funct3, wb_memory_read_data, address, write_data, write_enable, write_strobe, read_data); 
+module MemoryAccess(alu_result, reg2_data, memory_read_enable, memory_write_enable, funct3, wb_memory_read_data, address, write_data, write_strobe, read_data); 
+// module MemoryAccess(alu_result, reg2_data, memory_read_enable, memory_write_enable, funct3, wb_memory_read_data, address, write_data, write_enable, write_strobe, read_data); 
 
 input [DataWidth-1:0]alu_result;
 input [DataWidth-1:0]reg2_data;
@@ -14,11 +15,11 @@ input [2:0]funct3;
 output [DataWidth-1:0]wb_memory_read_data;
 
 //RAMBundle
-input [AddrWidth-1:0]address;
-input [DataWidth-1:0]write_data;
-input write_enable;
-input [WordSize-1:0]write_strobe;
-output [DataWidth-1:0]read_data;
+output [AddrWidth-1:0]address;
+output [DataWidth-1:0]write_data;
+// output write_enable;
+output [WordSize-1:0]write_strobe;
+input [DataWidth-1:0]read_data;
 
 wire [1:0]mem_address_index = alu_result[1:0];
 wire [DataWidth-1:0]data = read_data;
@@ -35,7 +36,7 @@ integer i;
 //     end
 //     else begin
 always@(*)begin
-      if(memory_read_enable)begin
+    if(memory_read_enable)begin
         case(funct3)
             3'b000:begin
                 case(mem_address_index)
@@ -85,7 +86,7 @@ always@(*)begin
       end
       else if(memory_write_enable)begin
         write_data <= reg2_data;
-        write_enable <= 1;
+        // write_enable <= 1;
         write_strobe <= 0;
         if(funct3 == 3'b000)begin
             write_strobe[mem_address_index] <= 1;
