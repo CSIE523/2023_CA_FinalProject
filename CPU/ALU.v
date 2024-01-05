@@ -1,13 +1,13 @@
-`define DataWidth 32
-
 module ALU(func, op1, op2, result);
+
+parameter DataWidth = 32;
 
 // input clk;
 input [3:0]func;
 input [DataWidth-1:0] op1;
 input [DataWidth-1:0] op2;
 
-output [DataWidth-1:0] result;
+output reg [DataWidth-1:0] result;
 
 localparam ZERO = 0,
         ADD = 1,
@@ -38,7 +38,7 @@ always@(*)begin
                 result <= (op1 << op2[4:0]);
             end
             SLT:begin
-                result <= ($(signed)op1 < $(signed)op2);
+                result <= ($signed(op1) < $signed(op2));
             end
             XOR:begin
                 result <= op1 ^ op2;

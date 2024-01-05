@@ -1,7 +1,7 @@
-`define PhysicalRegisterAddrWidth 5
-`define DataWidth 32
-
 module REG(write_enable, write_address, write_data, read_address1, read_address2, read_data1, read_data2);
+parameter PhysicalRegisterAddrWidth = 5;
+parameter DataWidth = 32;
+
 input write_enable;
 input [PhysicalRegisterAddrWidth-1:0]write_address;
 input [DataWidth-1:0]write_data;
@@ -10,8 +10,8 @@ input [PhysicalRegisterAddrWidth-1:0]read_address1;
 input [PhysicalRegisterAddrWidth-1:0]read_address2;
 
 
-output [DataWidth-1:0]read_data1;
-output [DataWidth-1:0]read_data2;
+output reg [DataWidth-1:0]read_data1;
+output reg [DataWidth-1:0]read_data2;
 
 // input [PhysicalRegisterAddrWidth-1:0]debug_read_address;
 

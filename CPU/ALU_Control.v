@@ -1,11 +1,11 @@
 module ALU_Ctrl(opcode, funct3, funct7, alu_funct);
 
-input clk, rst;
+// input clk, rst;
 input [6:0]opcode;
 input [2:0]funct3;
 input [6:0]funct7;
 
-output [3:0]alu_funct;
+output reg [3:0]alu_funct;
 
 localparam ZERO = 0,
         ADD = 1,

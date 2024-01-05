@@ -1,10 +1,10 @@
-`define DataWidth 32
-`define AddrWidth 32
-`define WordSize 4
-`define ByteBits 8
-
 module MemoryAccess(alu_result, reg2_data, memory_read_enable, memory_write_enable, funct3, wb_memory_read_data, address, write_data, write_strobe, read_data); 
 // module MemoryAccess(alu_result, reg2_data, memory_read_enable, memory_write_enable, funct3, wb_memory_read_data, address, write_data, write_enable, write_strobe, read_data); 
+parameter DataWidth = 32;
+parameter AddrWidth = 32;
+parameter WordSize = 4;
+parameter ByteBits = 8;
+
 
 input [DataWidth-1:0]alu_result;
 input [DataWidth-1:0]reg2_data;
@@ -12,17 +12,18 @@ input memory_read_enable;
 input memory_write_enable;
 input [2:0]funct3;
 
-output [DataWidth-1:0]wb_memory_read_data;
+output reg [DataWidth-1:0]wb_memory_read_data;
 
 //RAMBundle
 output [AddrWidth-1:0]address;
-output [DataWidth-1:0]write_data;
+output reg [DataWidth-1:0]write_data;
 // output write_enable;
-output [WordSize-1:0]write_strobe;
+output reg [WordSize-1:0]write_strobe;
 input [DataWidth-1:0]read_data;
 
 wire [1:0]mem_address_index = alu_result[1:0];
 wire [DataWidth-1:0]data = read_data;
+assign address = alu_result;
 
 integer i;
 
@@ -41,42 +42,42 @@ always@(*)begin
             3'b000:begin
                 case(mem_address_index)
                     0:begin
-                        wb_memory_read_data <= {24{data[7]}, data[7:0]};
+                        wb_memory_read_data <= {{24{data[7]}}, data[7:0]};
                     end
                     1:begin
-                        wb_memory_read_data <= {24{data[15]}, data[15:8]};
+                        wb_memory_read_data <= {{24{data[15]}}, data[15:8]};
                     end
                     2:begin
-                        wb_memory_read_data <= {24{data[23]}, data[23:16]};
+                        wb_memory_read_data <= {{24{data[23]}}, data[23:16]};
                     end
-                    default: wb_memory_read_data <= {24{data[31]}, data[31:24]};
+                    default: wb_memory_read_data <= {{24{data[31]}}, data[31:24]};
                 endcase
             end
             3'b100:begin
                 case(mem_address_index)
                     0:begin
-                        wb_memory_read_data <= {24{0}, data[31:24], 24{0}, data[7:0]};
+                        wb_memory_read_data <= {{24{0}}, data[31:24], {24{0}}, data[7:0]};
                     end
                     1:begin
-                        wb_memory_read_data <= {24{0}, data[31:24], 24{0}, data[15:8]};
+                        wb_memory_read_data <= {{24{0}}, data[31:24], {24{0}}, data[15:8]};
                     end
                     2:begin
-                        wb_memory_read_data <= {24{0}, data[31:24], 24{0}, data[23:16]};
+                        wb_memory_read_data <= {{24{0}}, data[31:24], {24{0}}, data[23:16]};
                     end
-                    default: wb_memory_read_data <= {24{0}, data[31:24]};
+                    default: wb_memory_read_data <= {{24{0}}, data[31:24]};
                 endcase
             end
             3'b001:begin
                 if(mem_address_index == 0)
-                    wb_memory_read_data <= {16{data[15]}, data[15:0]};
+                    wb_memory_read_data <= {{16{data[15]}}, data[15:0]};
                 else
-                    wb_memory_read_data <= {16{data[31]}, data[31:16]};
+                    wb_memory_read_data <= {{16{data[31]}}, data[31:16]};
             end
             3'b101:begin
                 if(mem_address_index == 0)
-                    wb_memory_read_data <= {16{0}, data[15:0]};
+                    wb_memory_read_data <= {{16{0}}, data[15:0]};
                 else
-                    wb_memory_read_data <= {16{0}, data[31:16]};
+                    wb_memory_read_data <= {{16{0}}, data[31:16]};
             end
             3'b010:begin
                 wb_memory_read_data <= data;

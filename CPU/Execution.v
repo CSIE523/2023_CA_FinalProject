@@ -8,7 +8,7 @@ input [31:0]immediate;
 input aluop1_source;
 input aluop2_source;
 output [31:0]mem_alu_result;
-output if_jump_flag;
+output reg if_jump_flag;
 output [31:0]if_jump_address;
 
 wire [6:0] opcode;
@@ -26,8 +26,8 @@ wire [3:0] func;
 wire [31:0] op1;
 wire [31:0] op2;
 wire [31:0] result;
-ALU u_ALU(func(func), op1(op1), op2(op2), result(result));
-ALU_Ctrl u_ALU_Ctrl(opcode(opcode), funct3(funct3), funct7(funct7), alu_funct(func));
+ALU u_ALU(.func(func), .op1(op1), .op2(op2), .result(result));
+ALU_Ctrl u_ALU_Ctrl(.opcode(opcode), .funct3(funct3), .funct7(funct7), .alu_funct(func));
 
 assign op1 = (aluop1_source == 0)?reg1_data:instruction_address;
 assign op2 = (aluop2_source == 0)?reg2_data:immediate;
@@ -50,9 +50,11 @@ always @(*)begin
            (funct3 == 3'b100 && ($signed(reg1_data) < $signed(reg2_data)))  ||
            (funct3 == 3'b101 && ($signed(reg1_data) >= $signed(reg2_data))) ||
            (funct3 == 3'b110 && reg1_data < reg2_data) ||
-           (funct3 == 3'b111 && reg1_data >= reg2_data) ||
-           )
+           (funct3 == 3'b111 && reg1_data >= reg2_data)
+        )
+        begin
             if_jump_flag <= 1'b1;
+        end
         else 
             if_jump_flag <= 1'b0;
     end

@@ -1,14 +1,13 @@
-`define DataWidth 8
-`define AddrWidth 32
-
 module WriteBack(instruction_address, alu_result, memory_read_data, regs_write_source, regs_write_data);
+parameter DataWidth = 32;
+parameter AddrWidth = 32;
 
 input [AddrWidth-1:0]instruction_address;
 input [DataWidth-1:0]alu_result;
 input [DataWidth-1:0]memory_read_data;
 input [1:0]regs_write_source;
 
-output [DataWidth-1:0]regs_write_data;
+output reg [DataWidth-1:0]regs_write_data;
 
 always@(*)begin
     if(regs_write_source == 2'd1)

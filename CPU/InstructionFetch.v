@@ -1,11 +1,12 @@
-module IF (clk,rst,jump_flag_id,jump_address_id,instruction_read_data,instruction_valid,instruction_address,instruction);
-
+// module IF (clk,rst,jump_flag_id,jump_address_id,instruction_read_data,instruction_valid,instruction_address,instruction);
+module IF (clk,rst,jump_flag_id,jump_address_id,instruction_read_data,instruction_address,instruction);
+input clk,rst;
 input jump_flag_id;
 input [31:0] jump_address_id;
 input [31:0] instruction_read_data;
-input instruction_valid;
-output [31:0] instruction_address;
-output [31:0] instruction;
+// input instruction_valid;
+output reg [31:0] instruction_address;
+output reg [31:0] instruction;
 
 always @(posedge clk or posedge rst)begin
     if(rst)begin
@@ -14,7 +15,7 @@ always @(posedge clk or posedge rst)begin
     end
     else begin
             instruction <= instruction_read_data;
-            instr_addr <= (jump_flag_id)?jump_address_id:instr_addr + 32'd4;
+            instruction_address <= (jump_flag_id)?jump_address_id:instruction_address + 32'd4;
     end
 end
     
