@@ -49,7 +49,7 @@ assign instruction = instr_out;
 wire jump_flag_id;
 wire [31:0] jump_address_id;
 wire [31:0] instruction_address;
-assign instruction_address = instr_addr;
+assign instr_addr = instruction_address;
 
 
 IF U_IF(
