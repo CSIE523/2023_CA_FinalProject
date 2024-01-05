@@ -30,6 +30,7 @@ wire [DataWidth-1:0]read_data1;
 wire [DataWidth-1:0]read_data2;
 
 REG U_REG(
+    .clk(clk),
     .rst(rst),
     .write_enable(write_enable),//
     .write_address(write_address),//

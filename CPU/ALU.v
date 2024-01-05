@@ -58,6 +58,7 @@ always@(*)begin
             SLTU:begin
                 result <= op1 < op2;
             end
+            default: result <= 0;
         endcase
     end
 // end

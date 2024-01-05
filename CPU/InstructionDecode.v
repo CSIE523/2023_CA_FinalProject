@@ -65,7 +65,7 @@ always @(*)begin
         case (opcode)
             7'b0000011 : wb_reg_write_source <= 2'd1;       //InstructionTypes.L
             7'b1101111 : wb_reg_write_source <= 2'd3;       //InstructionTypes.jal
-            7'b1100111 : wb_reg_write_source <= 2'd2;       //InstructionTypes.jalr
+            7'b1100111 : wb_reg_write_source <= 2'd3;       //InstructionTypes.jalr
             default:     wb_reg_write_source <= 2'd0;       //ALU_result
         endcase
         case (opcode)
