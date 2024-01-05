@@ -45,7 +45,6 @@ REG U_REG(
 // wire [DataWidth-1:0]debug_read_data;
 
 wire [31:0] instruction;
-assign instruction = instr_out;
 wire jump_flag_id;
 wire [31:0] jump_address_id;
 wire [31:0] instruction_address;
@@ -57,7 +56,7 @@ IF U_IF(
     .rst(rst),//
     .jump_flag_id(jump_flag_id),//
     .jump_address_id(jump_address_id),//
-    .instruction_read_data(instruction),//input instr // new instr
+    .instruction_read_data(instr_out),//input instr // new instr
     //.instruction_valid(instruction_valid),
     .instruction_address(instruction_address),
     .instruction(instruction)//

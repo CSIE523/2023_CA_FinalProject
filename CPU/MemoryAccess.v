@@ -37,6 +37,10 @@ integer i;
 //     end
 //     else begin
 always@(*)begin
+    // write_enable = 0;
+    write_data <= 0;
+    write_strobe <= 0;
+    wb_memory_read_data <= 0;
     if(memory_read_enable)begin
         case(funct3)
             3'b000:begin
@@ -56,13 +60,13 @@ always@(*)begin
             3'b100:begin
                 case(mem_address_index)
                     0:begin
-                        wb_memory_read_data <= {{24{0}}, data[31:24], {24{0}}, data[7:0]};
+                        wb_memory_read_data <= {{24{0}}, data[7:0]};
                     end
                     1:begin
-                        wb_memory_read_data <= {{24{0}}, data[31:24], {24{0}}, data[15:8]};
+                        wb_memory_read_data <= {{24{0}}, data[15:8]};
                     end
                     2:begin
-                        wb_memory_read_data <= {{24{0}}, data[31:24], {24{0}}, data[23:16]};
+                        wb_memory_read_data <= {{24{0}}, data[23:16]};
                     end
                     default: wb_memory_read_data <= {{24{0}}, data[31:24]};
                 endcase

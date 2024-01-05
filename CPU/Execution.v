@@ -29,10 +29,10 @@ wire [31:0] result;
 ALU u_ALU(.func(func), .op1(op1), .op2(op2), .result(result));
 ALU_Ctrl u_ALU_Ctrl(.opcode(opcode), .funct3(funct3), .funct7(funct7), .alu_funct(func));
 
-assign op1 = (aluop1_source == 0)?reg1_data:instruction_address;
-assign op2 = (aluop2_source == 0)?reg2_data:immediate;
+assign op1 = (aluop1_source == 0) ? reg1_data : instruction_address;
+assign op2 = (aluop2_source == 0) ? reg2_data : immediate;
 assign mem_alu_result = result;
-assign if_jump_address = immediate + (opcode == 7'b1101111)?reg1_data:instruction_address;
+assign if_jump_address = immediate + (opcode == 7'b1101111) ? reg1_data : instruction_address;
 
 // always @(posedge clk or posedge rst) begin
 //     if(rst)begin
@@ -44,13 +44,13 @@ assign if_jump_address = immediate + (opcode == 7'b1101111)?reg1_data:instructio
 always @(*)begin
         if((opcode == 7'b1101111) || 
            (opcode == 7'b1100111) || 
-           (opcode == 7'b1100011) || 
+           ((opcode == 7'b1100011) && (
            (funct3 == 3'b000 && reg1_data == reg2_data) || 
            (funct3 == 3'b001 && reg1_data != reg2_data) ||
            (funct3 == 3'b100 && ($signed(reg1_data) < $signed(reg2_data)))  ||
            (funct3 == 3'b101 && ($signed(reg1_data) >= $signed(reg2_data))) ||
            (funct3 == 3'b110 && reg1_data < reg2_data) ||
-           (funct3 == 3'b111 && reg1_data >= reg2_data)
+           (funct3 == 3'b111 && reg1_data >= reg2_data)))
         )
         begin
             if_jump_flag <= 1'b1;
