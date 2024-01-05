@@ -12,7 +12,7 @@ input      [31:0] data_out;  //read DM               //
 input      [31:0] instr_out; //read IM               //
 output            instr_read;//inst read enable      // 
 output     [31:0] instr_addr;//read inst addr        // 
-output reg        data_read; //data read enable      //
+output            data_read; //data read enable      //
 output [31:0] data_addr; //read data addr        //
 output [3:0]  data_write;//data write enable     //
 output [31:0] data_in;   //data write data       //
@@ -67,7 +67,7 @@ wire ex_aluop1_source;
 wire ex_aluop2_source;
 wire memory_read_enable;
 
-assign memory_read_enable = data_read;
+assign data_read = memory_read_enable;
 
 wire memory_write_enable;
 wire [1:0] wb_reg_write_source;
