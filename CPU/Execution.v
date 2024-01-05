@@ -1,5 +1,6 @@
-module EXE (instruction,instruction_address,reg1_data,reg2_data,immediate,aluop1_source,aluop2_source,mem_alu_result,if_jump_flag,if_jump_address);
+module EXE (rst, instruction,instruction_address,reg1_data,reg2_data,immediate,aluop1_source,aluop2_source,mem_alu_result,if_jump_flag,if_jump_address);
 
+input rst;
 input [31:0]instruction;
 input [31:0]instruction_address;
 input [31:0]reg1_data;
@@ -42,6 +43,8 @@ assign if_jump_address = immediate + (opcode == 7'b1101111) ? reg1_data : instru
 //     end
 //     else begin
 always @(*)begin
+        if(rst) if_jump_flag <= 0;
+        else begin
         if((opcode == 7'b1101111) || 
            (opcode == 7'b1100111) || 
            ((opcode == 7'b1100011) && (
@@ -57,6 +60,7 @@ always @(*)begin
         end
         else 
             if_jump_flag <= 1'b0;
+        end
     end
 // end
 
