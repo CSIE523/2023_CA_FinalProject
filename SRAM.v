@@ -24,11 +24,11 @@ assign tmp_DO = {  Memory_byte3[addr],
                    Memory_byte1[addr],
                    Memory_byte0[addr] };
 
-always @(posedge clk) begin
+always @(*) begin
     DO <= (read)?tmp_DO:32'bz;
 end
 
-always @(posedge clk) begin
+always @(negedge clk) begin
     if(write[0]) Memory_byte0[addr] <= DI[7:0];
     if(write[1]) Memory_byte1[addr] <= DI[15:8];
     if(write[2]) Memory_byte2[addr] <= DI[23:16];

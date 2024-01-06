@@ -25,6 +25,8 @@ wire [1:0]mem_address_index = alu_result[1:0];
 wire [DataWidth-1:0]data = read_data;
 assign address = alu_result;
 
+wire [DataWidth-1:0]index_shift = (mem_address_index << 3);
+
 integer i;
 
 // always@(posedge clk or posedge rst)begin
@@ -60,15 +62,15 @@ always@(*)begin
             3'b100:begin
                 case(mem_address_index)
                     0:begin
-                        wb_memory_read_data <= {{24{0}}, data[7:0]};
+                        wb_memory_read_data <= {{24'd0}, data[7:0]};
                     end
                     1:begin
-                        wb_memory_read_data <= {{24{0}}, data[15:8]};
+                        wb_memory_read_data <= {{24'd0}, data[15:8]};
                     end
                     2:begin
-                        wb_memory_read_data <= {{24{0}}, data[23:16]};
+                        wb_memory_read_data <= {{24'd0}, data[23:16]};
                     end
-                    default: wb_memory_read_data <= {{24{0}}, data[31:24]};
+                    default: wb_memory_read_data <= {{24'd0}, data[31:24]};
                 endcase
             end
             3'b001:begin
@@ -79,9 +81,9 @@ always@(*)begin
             end
             3'b101:begin
                 if(mem_address_index == 0)
-                    wb_memory_read_data <= {{16{0}}, data[15:0]};
+                    wb_memory_read_data <= {{16'd0}, data[15:0]};
                 else
-                    wb_memory_read_data <= {{16{0}}, data[31:16]};
+                    wb_memory_read_data <= {{16'd0}, data[31:16]};
             end
             3'b010:begin
                 wb_memory_read_data <= data;
@@ -95,7 +97,7 @@ always@(*)begin
         write_strobe <= 0;
         if(funct3 == 3'b000)begin
             write_strobe[mem_address_index] <= 1;
-            write_data <= reg2_data[ByteBits:0] << (mem_address_index << 3);
+            write_data <= (reg2_data[ByteBits-1:0] << index_shift);
         end
         else if(funct3 == 3'b001)begin
             if(mem_address_index == 0)begin
@@ -115,6 +117,8 @@ always@(*)begin
         else if(funct3 == 3'b010)begin
             for(i=0;i<4;i=i+1)
                 write_strobe[i] <= 1;
+
+           
         end
       end
     end

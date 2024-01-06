@@ -53,7 +53,7 @@ always@(*)begin
                result <= (op1 >> op2[4:0]); 
             end
             SRA:begin
-                result <= (op1 >>> op2[4:0]);
+                result <= ({{32{op1[31]}}, op1} >> op2[4:0] );
             end
             SLTU:begin
                 result <= op1 < op2;

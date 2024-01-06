@@ -17,6 +17,9 @@ output [31:0] data_addr; //read data addr        //
 output [3:0]  data_write;//data write enable     //
 output [31:0] data_in;   //data write data       //
 
+wire [11:0] real_data_addr;
+assign real_data_addr = data_addr[13:2];
+
 assign instr_read = 1;
 
 wire write_enable;
@@ -47,7 +50,6 @@ REG U_REG(
 // wire [DataWidth-1:0]debug_read_data;
 
 wire [31:0] instruction = instr_out;
-wire [31:0] instruction_address_delay;
 wire jump_flag_id;
 wire [31:0] jump_address_id;
 wire [31:0] instruction_address;
@@ -63,8 +65,7 @@ IF U_IF(
     .instruction_read_data(instr_out),//input instr // new instr
     //////////
     //.instruction_valid(instruction_valid),
-    .instruction_address(instruction_address),
-    .instruction_address_delay(instruction_address_delay)//
+    .instruction_address(instruction_address)
     );
 
 wire [31:0] ex_immediate;
@@ -97,7 +98,7 @@ wire [31:0]mem_alu_result;
 
 EXE U_EXE(
     .instruction(instr_out),//
-    .instruction_address(instruction_address_delay),
+    .instruction_address(instruction_address),
     .reg1_data(read_data1),//
     .reg2_data(read_data2),//
     .immediate(ex_immediate),//
@@ -111,7 +112,7 @@ EXE U_EXE(
 wire [DataWidth-1:0]memory_read_data;
 
 WriteBack U_WB(
-    .instruction_address(instruction_address_delay), //
+    .instruction_address(instruction_address), //
     .alu_result(mem_alu_result), //
     .memory_read_data(memory_read_data), 
     .regs_write_source(wb_reg_write_source),// 
