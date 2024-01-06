@@ -96,7 +96,6 @@ wire [31:0]mem_alu_result;
 
 
 EXE U_EXE(
-    .rst(rst),
     .instruction(instr_out),//
     .instruction_address(instruction_address_delay),
     .reg1_data(read_data1),//
