@@ -15,9 +15,6 @@ wire [31:0] data_addr;
 wire [31:0] data_in;
 wire [31:0] data_out;
 
-wire [13:0] real_data_address = instr_addr[15:2];
-wire [4:0]rd = instr_out[11:7];
-
 CPU i_CPU(
     .clk        ( clk              ),
     .rst        ( rst              ),
