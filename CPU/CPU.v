@@ -55,7 +55,6 @@ wire [31:0] jump_address_id;
 wire [31:0] instruction_address;
 assign instr_addr = instruction_address;
 
-
 IF U_IF(
     .clk(clk),//
     .rst(rst),//
@@ -77,9 +76,19 @@ assign data_read = memory_read_enable;
 
 wire memory_write_enable;
 wire [1:0] wb_reg_write_source;
+wire [31:0] instruction_to_exe;
+wire [31:0] instruction_address_to_exe_and_wb;
 
 ID U_ID(
+    .clk(clk),//
+    .rst(rst),//
     .instruction(instr_out),//
+    //pipeline
+    .pre_jump_flag_id(jump_flag_id),
+    .instruction_to_exe(instruction_to_exe),
+    .instruction_address(instruction_address),
+    .instruction_address_to_exe_and_wb(instruction_address_to_exe_and_wb),
+    //
     .regs_reg1_read_address(read_address1),//
     .regs_reg2_read_address(read_address2),//
     .ex_immediate(ex_immediate),//
@@ -97,8 +106,8 @@ wire [31:0]mem_alu_result;
 
 
 EXE U_EXE(
-    .instruction(instr_out),//
-    .instruction_address(instruction_address),
+    .instruction(instruction_to_exe),//
+    .instruction_address(instruction_address_to_exe_and_wb),
     .reg1_data(read_data1),//
     .reg2_data(read_data2),//
     .immediate(ex_immediate),//
@@ -112,7 +121,7 @@ EXE U_EXE(
 wire [DataWidth-1:0]memory_read_data;
 
 WriteBack U_WB(
-    .instruction_address(instruction_address), //
+    .instruction_address(instruction_address_to_exe_and_wb), //
     .alu_result(mem_alu_result), //
     .memory_read_data(memory_read_data), 
     .regs_write_source(wb_reg_write_source),// 
@@ -120,7 +129,7 @@ WriteBack U_WB(
     );
 
 wire [2:0]funct3;
-assign funct3 = instruction[14:12];
+assign funct3 = instruction_to_exe[14:12];
 
 MemoryAccess U_MemoryAccess(
     .alu_result(mem_alu_result), //

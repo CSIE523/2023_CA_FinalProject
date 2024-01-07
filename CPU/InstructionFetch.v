@@ -8,6 +8,7 @@ input [31:0] instruction_read_data;
 output reg [31:0] instruction_address;
 reg [31:0] pre_instruction_address;
 
+
 always @(posedge clk or posedge rst)begin
     if(rst)begin
         instruction_address <= 32'h0;
