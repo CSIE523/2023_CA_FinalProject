@@ -8,21 +8,17 @@ input [31:0] instruction_read_data;
 output reg [31:0] instruction_address;
 reg [31:0] pre_instruction_address;
 
-reg [31:0] instruction_count;
 
 always @(posedge clk or posedge rst)begin
     if(rst)begin
         instruction_address <= 32'h0;
         // instruction <= 32'h0000_0013; //nop = addi x0,x0,0
         pre_instruction_address <= 32'h0;
-        instruction_count <= 0;
     end
     else begin
         // instruction <= instruction_read_data;
         pre_instruction_address <= (jump_flag_id) ? jump_address_id: pre_instruction_address + 32'd4;
         instruction_address <= (jump_flag_id) ? jump_address_id: pre_instruction_address + 32'd4;
-
-        instruction_count <= instruction_count + 1;
     end
 end
     

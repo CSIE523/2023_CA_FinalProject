@@ -1,4 +1,4 @@
-module ID (clk, rst, instruction, pre_jump_flag_id,instruction_to_exe,instruction_address,instruction_address_to_exe_and_wb,regs_reg1_read_address,regs_reg2_read_address,ex_immediate,ex_aluop1_source,ex_aluop2_source,memory_read_enable,memory_write_enable,wb_reg_write_source,reg_write_enable,reg_write_address);
+module ID (clk, rst, instruction, pre_jump_flag_id,instruction_to_exe,instruction_address,instruction_address_to_exe_and_wb,ex_immediate,ex_aluop1_source,ex_aluop2_source,memory_read_enable,memory_write_enable,wb_reg_write_source, read_data1, read_data2, write_data);
 input clk,rst;
 input  [31:0] instruction;
 //
@@ -6,17 +6,18 @@ input pre_jump_flag_id;
 input [31:0] instruction_address;
 output reg [31:0] instruction_to_exe;
 output reg [31:0] instruction_address_to_exe_and_wb;
+input [31:0]write_data;
 //
-output reg [4:0] regs_reg1_read_address;
-output reg [4:0] regs_reg2_read_address;
+reg [4:0] regs_reg1_read_address;
+reg [4:0] regs_reg2_read_address;
 output reg [31:0] ex_immediate;
 output reg ex_aluop1_source;
 output reg ex_aluop2_source;
 output reg memory_read_enable;
 output reg memory_write_enable;
 output reg [1:0] wb_reg_write_source;
-output reg reg_write_enable;
-output reg [4:0] reg_write_address;
+reg reg_write_enable;
+reg [4:0] reg_write_address;
 
 wire [6:0] opcode;
 wire [2:0] funct3;
@@ -30,6 +31,38 @@ assign funct7 = instruction[31:25];
 assign rd = instruction[11:7];
 assign rs1 = instruction[19:15];
 assign rs2 = instruction[24:20];
+
+output [31:0]read_data1;
+output [31:0]read_data2;
+
+//RegisterFile
+reg [31:0]registers[0:31];
+
+integer i;
+
+assign read_data1 = (regs_reg1_read_address == 0) ? 0 : registers[regs_reg1_read_address];
+assign read_data2 = (regs_reg2_read_address == 0) ? 0 : registers[regs_reg2_read_address];
+
+always@(posedge clk or posedge rst)begin
+    if(rst)begin
+        for (i = 0;i < 32;i = i + 1) begin
+            registers[i] <= 0;
+        end
+    end
+    else begin
+        if(reg_write_enable && reg_write_address != 0)begin
+            registers[reg_write_address] <= write_data;
+        end
+        // if(debug_read_address == 0)
+        //     debug_read_data <= 0;
+        // else 
+        //     debug_read_data <= registers[debug_read_address];
+    end
+end
+
+
+
+//
 
 always @(posedge clk or posedge rst)begin
     if(rst)begin

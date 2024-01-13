@@ -1,15 +1,17 @@
 `timescale 1ns/10ps
-`define CYCLE 10.0 // Cycle time
+`define CYCLE 15.0 // Cycle time
 `define MAX 150000 // Max cycle number
 `define mem_word(addr) \
-  {TOP.i_DM.Memory_byte3[addr], \
-   TOP.i_DM.Memory_byte2[addr], \
-   TOP.i_DM.Memory_byte1[addr], \
-   TOP.i_DM.Memory_byte0[addr]}
-`define reg_word(addr) TOP.i_CPU.i_RF.Reg_Data[addr]
+  {i_DM.Memory_byte3[addr], \
+   i_DM.Memory_byte2[addr], \
+   i_DM.Memory_byte1[addr], \
+   i_DM.Memory_byte0[addr]}
+`define reg_word(addr) i_CPU.i_RF.Reg_Data[addr]
 `define SIM_END 'h3fff
 `define SIM_END_CODE -32'd1
 `define TEST_START 'h2000
+// `define SDFFILE    "./CPU_syn.sdf"
+
 
 module top_tb;
 
@@ -24,22 +26,64 @@ reg [31:0] counter;
 
 always #(`CYCLE/2) clk = ~clk;
 
-top TOP(
-  .clk(clk),
-  .rst(rst)
+wire        instr_read;
+wire [31:0] instr_addr;
+wire [31:0] instr_out;
+wire        data_read;
+wire [3:0]  data_write;
+wire [31:0] data_addr;
+wire [31:0] data_in;
+wire [31:0] data_out;
+
+
+//CPU
+CPU i_CPU(
+    .clk        ( clk              ),
+    .rst        ( rst              ),
+    .instr_read ( instr_read       ),
+    .instr_addr ( instr_addr       ),
+    .instr_out  ( instr_out        ),
+    .data_read  ( data_read        ),
+    .data_write ( data_write       ),
+    .data_addr  ( data_addr        ),
+    .data_in    ( data_in          ),
+    .data_out   ( data_out         )
 );
+
+//SRAM
+SRAM i_IM( //read only
+    .clk        ( clk              ),
+    .rst        ( rst              ),
+    .addr       ( instr_addr[15:2] ),
+    .read       ( instr_read       ),
+    .write      ( 4'b0             ),
+    .DI         ( 32'b0            ),
+    .DO         ( instr_out        )
+);
+
+SRAM i_DM(
+    .clk        ( clk             ),
+    .rst        ( rst             ),
+    .addr       ( data_addr[15:2] ),
+    .read       ( data_read       ),
+    .write      ( data_write      ),
+    .DI         ( data_in         ),
+    .DO         ( data_out        )
+);
+//
+
 
 initial begin
     clk = 0; rst = 1;
     #(`CYCLE) rst = 0;
-    $readmemh("./main0.hex", TOP.i_IM.Memory_byte0);
-    $readmemh("./main0.hex", TOP.i_DM.Memory_byte0); 
-    $readmemh("./main1.hex", TOP.i_IM.Memory_byte1);
-    $readmemh("./main1.hex", TOP.i_DM.Memory_byte1); 
-    $readmemh("./main2.hex", TOP.i_IM.Memory_byte2);
-    $readmemh("./main2.hex", TOP.i_DM.Memory_byte2); 
-    $readmemh("./main3.hex", TOP.i_IM.Memory_byte3);
-    $readmemh("./main3.hex", TOP.i_DM.Memory_byte3); 
+    $readmemh("./main0.hex", i_IM.Memory_byte0);
+    $readmemh("./main0.hex", i_DM.Memory_byte0); 
+    $readmemh("./main1.hex", i_IM.Memory_byte1);
+    $readmemh("./main1.hex", i_DM.Memory_byte1); 
+    $readmemh("./main2.hex", i_IM.Memory_byte2);
+    $readmemh("./main2.hex", i_DM.Memory_byte2); 
+    $readmemh("./main3.hex", i_IM.Memory_byte3);
+    $readmemh("./main3.hex", i_DM.Memory_byte3); 
 
     num = 0;
     gf = $fopen("./golden.hex", "r");
@@ -95,18 +139,18 @@ always@(posedge clk or posedge rst) begin
         counter <= 32'b1 + counter;
 end
 
-`ifdef SYN
-initial $sdf_annotate("top_syn.sdf", TOP);
+`ifdef SDF
+initial $sdf_annotate("CPU_syn.sdf", i_CPU);
 `endif
 
 initial
 begin
   `ifdef FSDB
   $fsdbDumpfile("top.fsdb");
-  $fsdbDumpvars(0, TOP);
+  $fsdbDumpvars(0, i_CPU);
   `elsif FSDB_ALL
   $fsdbDumpfile("top.fsdb");
-  $fsdbDumpvars("+struct", "+mda", TOP);
+  $fsdbDumpvars("+struct", "+mda", i_CPU);
   `endif
 end
 

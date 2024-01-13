@@ -32,17 +32,17 @@ wire [PhysicalRegisterAddrWidth-1:0]read_address2;
 wire [DataWidth-1:0]read_data1;
 wire [DataWidth-1:0]read_data2;
 
-REG U_REG(
-    .clk(clk),
-    .rst(rst),
-    .write_enable(write_enable),//
-    .write_address(write_address),//
-    .write_data(write_data),//
-    .read_address1(read_address1), //
-    .read_address2(read_address2),//
-    .read_data1(read_data1),//
-    .read_data2(read_data2)//
-    );
+// REG U_REG(
+//     .clk(clk),
+//     .rst(rst),
+//     .write_enable(write_enable),//
+//     .write_address(write_address),//
+//     .write_data(write_data),//
+//     .read_address1(read_address1), //
+//     .read_address2(read_address2),//
+//     .read_data1(read_data1),//
+//     .read_data2(read_data2)//
+//     );
 
 
 
@@ -88,17 +88,16 @@ ID U_ID(
     .instruction_to_exe(instruction_to_exe),
     .instruction_address(instruction_address),
     .instruction_address_to_exe_and_wb(instruction_address_to_exe_and_wb),
+    .read_data1(read_data1),//
+    .read_data2(read_data2),//
+    .write_data(write_data),
     //
-    .regs_reg1_read_address(read_address1),//
-    .regs_reg2_read_address(read_address2),//
     .ex_immediate(ex_immediate),//
     .ex_aluop1_source(ex_aluop1_source),//
     .ex_aluop2_source(ex_aluop2_source),//
     .memory_read_enable(memory_read_enable),//
     .memory_write_enable(memory_write_enable),//
-    .wb_reg_write_source(wb_reg_write_source),//
-    .reg_write_enable(write_enable),//
-    .reg_write_address(write_address)//
+    .wb_reg_write_source(wb_reg_write_source)//
     );
 
 

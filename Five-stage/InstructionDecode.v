@@ -1,18 +1,26 @@
-module ID (clk, rst, instruction,ex_immediate,ex_aluop1_source,ex_aluop2_source,memory_read_enable,memory_write_enable,wb_reg_write_source, read_data1, read_data2, write_data);
-
-input clk, rst;
+module ID (clk, rst, instruction, pre_jump_flag_id,instruction_id_to_exe,instruction_address,instruction_address_id_to_exe,regs_reg1_read_address,regs_reg2_read_address,ex_immediate,ex_aluop1_source,ex_aluop2_source,memory_read_enable,memory_write_enable,wb_reg_write_source,reg_write_enable,reg_write_address, forward_1a, forward_1b, read_data1, read_data2, read_data1_id_to_exe, read_data2_id_to_exe, mem_alu_result);
+input clk,rst;
 input  [31:0] instruction;
-input [31:0]write_data;
-reg [4:0] regs_reg1_read_address;
-reg [4:0] regs_reg2_read_address;
+//
+input pre_jump_flag_id;
+input [31:0] instruction_address;
+input forward_1a, forward_1b;
+input [31:0]read_data1, read_data2;
+input [31:0]mem_alu_result;
+output reg [31:0] read_data1_id_to_exe, read_data2_id_to_exe;
+output reg [31:0] instruction_id_to_exe;
+output reg [31:0] instruction_address_id_to_exe;
+//
+output reg [4:0] regs_reg1_read_address;
+output reg [4:0] regs_reg2_read_address;
 output reg [31:0] ex_immediate;
 output reg ex_aluop1_source;
 output reg ex_aluop2_source;
 output reg memory_read_enable;
 output reg memory_write_enable;
 output reg [1:0] wb_reg_write_source;
-reg reg_write_enable;
-reg [4:0] reg_write_address;
+output reg reg_write_enable;
+output reg [4:0] reg_write_address;
 
 wire [6:0] opcode;
 wire [2:0] funct3;
@@ -27,51 +35,26 @@ assign rd = instruction[11:7];
 assign rs1 = instruction[19:15];
 assign rs2 = instruction[24:20];
 
-//RegisterFile
-
-output [31:0]read_data1, read_data2;
-
-reg [31:0]registers[0:31];
-
-assign read_data1 = (regs_reg1_read_address == 0) ? 0 : registers[regs_reg1_read_address];
-assign read_data2 = (regs_reg2_read_address == 0) ? 0 : registers[regs_reg2_read_address];
-
-integer i;
-
-always@(posedge clk or posedge rst)begin
+always @(posedge clk or posedge rst)begin
     if(rst)begin
-        for (i = 0;i < 32;i = i + 1) begin
-            registers[i] <= 0;
-        end
+        regs_reg1_read_address <= 5'd0;
+        regs_reg2_read_address <= 5'd0;
+        ex_immediate <= 32'd0;
+        ex_aluop1_source <= 1'd0;
+        ex_aluop2_source <= 1'd1;
+        memory_read_enable <= 1'd0;
+        memory_write_enable <= 1'd0;
+        wb_reg_write_source <= 1'd0;
+        reg_write_enable <= 1'd1;
+        reg_write_address <= 1'd0;
+        instruction_id_to_exe <= 32'h0000_0013;
+        instruction_address_id_to_exe <= 32'h00;
     end
     else begin
-        if(reg_write_enable && reg_write_address != 0)begin
-            registers[reg_write_address] <= write_data;
-        end
-    end
-end
-
-//
-
-
-
-// always @(posedge clk or posedge rst)begin
-    // if(rst)begin
-    //     regs_reg1_read_address <= ;
-    //     val regs_reg2_read_address <= ;
-    //     ex_immediate;
-    //     ex_aluop1_source;
-    //     ex_aluop2_source;
-    //     memory_read_enable;
-    //     memory_write_enable;
-    //     wb_reg_write_source;
-    //     reg_write_enable;
-    //     reg_write_address;
-    // end
-    // else begin
-always @(*)begin
         regs_reg1_read_address <= (opcode == 7'b0110111)?5'd0:rs1;
         regs_reg2_read_address <= rs2;
+        instruction_id_to_exe <= instruction;
+        instruction_address_id_to_exe <= instruction_address;
         case (opcode)
             7'b0010011:ex_immediate <= {{21{instruction[31]}},instruction[30:20]};                   //InstructionTypes.I
             7'b0000011:ex_immediate <= {{21{instruction[31]}},instruction[30:20]};                   //InstructionTypes.L
@@ -109,7 +92,24 @@ always @(*)begin
             default:   reg_write_enable <= 1'b0;
         endcase
         reg_write_address <= rd;
+        if(pre_jump_flag_id)begin
+            regs_reg1_read_address <= 5'd0;
+            regs_reg2_read_address <= 5'd0;
+            ex_immediate <= 32'd0;
+            ex_aluop1_source <= 1'd0;
+            ex_aluop2_source <= 1'd1;
+            memory_read_enable <= 1'd0;
+            memory_write_enable <= 1'd0;
+            wb_reg_write_source <= 1'd0;
+            reg_write_enable <= 1'd1;
+            reg_write_address <= 1'd0;
+            instruction_id_to_exe <= 32'h0000_0013;
+            instruction_address_id_to_exe <= instruction_address_id_to_exe;
+        end
+        read_data1_id_to_exe <= (0) ? mem_alu_result : read_data1;
+        read_data2_id_to_exe <= (0) ? mem_alu_result : read_data2;
+
     end
-// end
+end
     
 endmodule
