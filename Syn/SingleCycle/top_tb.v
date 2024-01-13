@@ -10,7 +10,7 @@
 `define SIM_END 'h3fff
 `define SIM_END_CODE -32'd1
 `define TEST_START 'h2000
-// `define SDFFILE    "./CPU_syn.sdf"
+`define SDFFILE    "./CPU_syn.sdf"
 
 
 module top_tb;
@@ -140,7 +140,7 @@ always@(posedge clk or posedge rst) begin
 end
 
 `ifdef SDF
-initial $sdf_annotate("CPU_syn.sdf", i_CPU);
+initial $sdf_annotate(`SDFFILE, i_CPU);
 `endif
 
 initial
