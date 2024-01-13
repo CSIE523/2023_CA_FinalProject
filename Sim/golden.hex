@@ -1,45 +1,45 @@
-     0:        00700513        addi x10 x0 7
-     4:        00500593        addi x11 x0 5
-     8:        00600613        addi x12 x0 6
-     c:        00200693        addi x13 x0 2
-    10:        00100713        addi x14 x0 1
-
-00000014 <loop>:
-    14:        00b54a63        blt x10 x11 20 <l1>
-    18:        000587b3        add x15 x11 x0
-    1c:        000505b3        add x11 x10 x0
-    20:        00078533        add x10 x15 x0
-    24:        ff1ff06f        jal x0 -16 <loop>
-
-00000028 <l1>:
-    28:        00c5ca63        blt x11 x12 20 <l2>
-    2c:        000607b3        add x15 x12 x0
-    30:        00058633        add x12 x11 x0
-    34:        000785b3        add x11 x15 x0
-    38:        fddff06f        jal x0 -36 <loop>
-
-0000003c <l2>:
-    3c:        00d64a63        blt x12 x13 20 <l3>
-    40:        000687b3        add x15 x13 x0
-    44:        000606b3        add x13 x12 x0
-    48:        00078633        add x12 x15 x0
-    4c:        fc9ff06f        jal x0 -56 <loop>
-
-00000050 <l3>:
-    50:        00e6ca63        blt x13 x14 20 <finish>
-    54:        000707b3        add x15 x14 x0
-    58:        00068733        add x14 x13 x0
-    5c:        000786b3        add x13 x15 x0
-    60:        fb5ff06f        jal x0 -76 <loop>
-
-00000064 <finish>:
-    64:        00000013        addi x0 x0 0
-    68:        00000013        addi x0 x0 0
-    6c:        00000013        addi x0 x0 0
-
-when program finished,
-    x10 = 1,
-    x11 = 2,
-    x12 = 5,
-    x13 = 6,
-    x14 = 7;
+fffffff0
+fffffff8
+00000008
+00000001
+00000001
+78787878
+000091a2
+00000003
+fefcfefd
+10305070
+cccccccc
+ffffffcc
+ffffcccc
+000000cc
+0000cccc
+00000d9d
+00000004
+00000003
+000001a6
+00000ec6
+2468b7a8
+5dbf9f00
+00012b38
+fa2817b7
+ff000000
+12345678
+0000f000
+00000f00
+000000f0
+0000000f
+56780000
+78000000
+00005678
+00000078
+12345678
+ce780000
+fffff000
+fffff000
+fffff000
+fffff000
+fffff000
+fffff000
+1357a064
+13578000
+fffff004

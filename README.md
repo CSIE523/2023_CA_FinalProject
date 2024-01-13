@@ -1,5 +1,7 @@
 # 2023_CA_FinalProject
 
+More details in [Implement RISC-V pipelined processor from scratch](https://hackmd.io/jQ4yP94_Sv6y85JBiH5Amw?both)
+
 ## Enviroment
 ```
 OS   : CentOS Linux 7
